@@ -1,0 +1,17 @@
+{
+  "name": "html-generator",
+  "version": "1.0.0",
+  "description": "Generates html from excel file.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Utkarsh Raj",
+  "license": "ISC",
+  "dependencies": {
+    "create-html": "^4.1.0",
+    "html-pdf": "^2.2.0",
+    "jimp": "^0.5.4",
+    "xlsx": "^0.14.0"
+  }
+}
