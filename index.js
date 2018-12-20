@@ -3,7 +3,7 @@ var Jimp = require("jimp");
 var fs = require('fs');
 var createHtml = require('create-html');
 
-var workbook = XLSX.readFile('responses.xlsx', {cellDates: true});
+var workbook = XLSX.readFile('responses3.xlsx', {cellDates: true});
 var sheet_name_list = workbook.SheetNames;
 var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
 var columnNames = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {header: 1})[0];
@@ -64,7 +64,7 @@ async function loadImage(cap1, cap2, cap3, cap4, cap5, cap6, cap7, cap8, cap9, c
   }
 }
 
-for (var i=0; i<1; i++) {
+for (var i=0; i<183; i++) {
 	var year = xlData[i][columnNames[19]];
 	var commitee = String(xlData[i][columnNames[41]]);
   
@@ -74,7 +74,7 @@ for (var i=0; i<1; i++) {
   year = String(year).substring(11,15);
 
   var femaleAtt = 'N/A';
-  if (String(xlData[i][columnNames[95]]) !== 'undefined' && String(xlData[i][columnNames[97]]) !== 'undefined') {
+  if (String(xlData[i][columnNames[95]]) !== '' && String(xlData[i][columnNames[97]]) !== '') {
     var femaleAtt1 = Number(xlData[i][columnNames[95]]);
 	  var femaleAtt2 = Number(xlData[i][columnNames[97]]);
     if (femaleAtt1 + femaleAtt2 === 0) {
@@ -88,17 +88,12 @@ for (var i=0; i<1; i++) {
 	var registers = xlData[i][columnNames[75]];
 
 	var netIncome = 'N/A';
-	if (String(xlData[i][columnNames[126]]) !== 'undefined' && String(xlData[i][columnNames[112]]) !== 'undefined')
+	if (String(xlData[i][columnNames[126]]) !== '' && String(xlData[i][columnNames[112]]) !== '')
 		var netIncome = Number(xlData[i][columnNames[126]]) - Number(xlData[i][columnNames[112]]);
 	
 	var regist = 0;
-	if (String(xlData[i][columnNames[75]]) !== 'undefined')
+	if (String(xlData[i][columnNames[75]]) !== '')
 		regist = String(xlData[i][columnNames[75]]).split(',').length;
-
-	var userFee = 'N/A';
-	if (String(xlData[i][columnNames[208]]) !== 'undefined')
-		userFee = Number(xlData[i][columnNames[208]]);
-
 
   var wssSetup = xlData[i][columnNames[281]];
   wssSetup = 2018 - Number(wssSetup.toISOString().split('-')[0]);
@@ -109,16 +104,16 @@ for (var i=0; i<1; i++) {
   var cfund3 = xlData[i][columnNames[247]];
   var cfund4 = xlData[i][columnNames[249]];
   var cfund = '';
-  if (String(cfund1) !== 'undefined' && Number(cfund1) === 1) {
+  if (String(cfund1) !== '' && Number(cfund1) === 1) {
     cfund += 'building new toilet; '
   }
-  if (String(cfund2) !== 'undefined' && Number(cfund1) === 1) {
+  if (String(cfund2) !== '' && Number(cfund1) === 1) {
     cfund += 'building new bathroom; '
   }
-  if (String(cfund3) !== 'undefined' && Number(cfund1) === 1) {
+  if (String(cfund3) !== '' && Number(cfund1) === 1) {
     cfund += 'building new TBR; '
   }
-  if (String(cfund4) !== 'undefined' && Number(cfund1) === 1) {
+  if (String(cfund4) !== '' && Number(cfund1) === 1) {
     cfund += 'WSS Maintenance; '
   }
   if(cfund === '') {
@@ -126,36 +121,8 @@ for (var i=0; i<1; i++) {
   }
 
   var MaturityDate = 'N/A';
-  if (String(xlData[i][columnNames[267]]) !== 'undefined')
+  if (String(xlData[i][columnNames[267]]) !== '')
     MaturityDate = GetFormattedDate(xlData[i][columnNames[267]].toISOString());
-
-	var an = xlData[i][columnNames[39]];
-	var ll = xlData[i][columnNames[323]];
-	var lw = xlData[i][columnNames[334]];
-	var ma = xlData[i][columnNames[338]];
-	var lwma = Number(lw) + Number(ma);
-	var ofqo = 'N/A';
-	if (String(xlData[i][columnNames[395]]) !== 'undefined' && String(xlData[i][columnNames[456]]) !== 'undefined')
-		ofqo = Number(xlData[i][columnNames[395]]) + Number(xlData[i][columnNames[456]]);
-	else if (String(xlData[i][columnNames[395]]) !== 'undefined') {
-		ofqo = Number(xlData[i][columnNames[395]]);
-	}
-	else {
-		ofqo = Number(xlData[i][columnNames[456]]);	
-	}
-	
-	var mb = xlData[i][columnNames[339]];
-	var mc = xlData[i][columnNames[340]];
-	var mbmc = '';
-	if (String(mb) === 'Other (please specify)') {
-		mbmc = String(mc);
-	}
-	else if(String(mb) === 'undefined' && String(mc) === 'undefined') {
-		mbmc = '';
-	}
-	else {
-		mbmc = String(mb);
-	}
 
 	var tim1 = xlData[i][columnNames[17]];
 	var tim2 = xlData[i][columnNames[18]];
@@ -169,13 +136,13 @@ for (var i=0; i<1; i++) {
 	var ia = 0;
 	var ig = 0;
 
-  if (String(xlData[i][columnNames[234]]) !== 'undefined')
+  if (String(xlData[i][columnNames[234]]) !== '')
     ia = Number(xlData[i][columnNames[234]]);
-  if (String(xlData[i][columnNames[240]]) !== 'undefined')
+  if (String(xlData[i][columnNames[240]]) !== '')
     ig = Number(xlData[i][columnNames[240]]);
 
-  if (String(xlData[i][columnNames[304]]) !== 'undefined')
-    subsImg1 = `<img src=${xlData[i][columnNames[304]]}>`;
+  if (String(xlData[i][columnNames[304]]) !== '')
+    subsImg1 = `<img src="${xlData[i][columnNames[304]]}">`;
 
   var sourceCode = 0;
   /*
@@ -187,24 +154,24 @@ for (var i=0; i<1; i++) {
   Could not define: 6
   */
 
-	if (String(xlData[i][columnNames[493]]) !== 'undefined') {
-		waterSourceImg = `<img src=${xlData[i][columnNames[493]]}>`;
+	if (String(xlData[i][columnNames[493]]) !== '') {
+		waterSourceImg = `<img src="${xlData[i][columnNames[493]]}">`;
     sourceCode = 1;
   }
-  else if (String(xlData[i][columnNames[368]]) !== 'undefined') {
-    waterSourceImg = `<img src=${xlData[i][columnNames[368]]}>`; 
+  else if (String(xlData[i][columnNames[368]]) !== '') {
+    waterSourceImg = `<img src="${xlData[i][columnNames[368]]}">`; 
     sourceCode = 2;
   }
-  else if (String(xlData[i][columnNames[402]]) !== 'undefined') {
-    waterSourceImg = `<img src=${xlData[i][columnNames[402]]}>`; 
+  else if (String(xlData[i][columnNames[402]]) !== '') {
+    waterSourceImg = `<img src="${xlData[i][columnNames[402]]}">`; 
     sourceCode = 3;
   }
-  else if (String(xlData[i][columnNames[433]]) !== 'undefined') {
-    waterSourceImg = `<img src=${xlData[i][columnNames[433]]}>`; 
+  else if (String(xlData[i][columnNames[433]]) !== '') {
+    waterSourceImg = `<img src="${xlData[i][columnNames[433]]}">`; 
     sourceCode = 4;
   }
-  else if (String(xlData[i][columnNames[464]]) !== 'undefined') {
-    waterSourceImg = `<img src=${xlData[i][columnNames[464]]}>`;
+  else if (String(xlData[i][columnNames[464]]) !== '') {
+    waterSourceImg = `<img src="${xlData[i][columnNames[464]]}">`;
     sourceCode = 5;
   }
   else {
@@ -232,7 +199,7 @@ for (var i=0; i<1; i++) {
       waterStatus === 'Water available throughout year') {
         outputStatement = ' is <u>Functional</u>, water is supplied to all households throughout the year.';
     }
-    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== 'undefined' && noOfMonths >= 6) {
+    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== '' && noOfMonths >= 6) {
       outputStatement = ` is <u>Non-functional</u>, water not supplied during ${noOfMonths} months and ${householdsExcluded} households excluded.`;
     }
     else {
@@ -251,7 +218,7 @@ for (var i=0; i<1; i++) {
       waterStatus === 'Water available throughout year' && pump === 'Yes' && pumpStatus === 'Running') {
         outputStatement = ' is <u>Functional</u>, water is supplied to all households throughout the year.';
     }
-    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== 'undefined' && noOfMonths >= 6 && pump === 'Yes') {
+    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== '' && noOfMonths >= 6 && pump === 'Yes') {
       outputStatement = ` is <u>Non-functional</u>, water not supplied during ${noOfMonths} months and ${householdsExcluded} households excluded.`;
     }
     else {
@@ -270,7 +237,7 @@ for (var i=0; i<1; i++) {
       waterStatus === 'Water available throughout year' && pump === 'Yes' && pumpStatus === 'Running') {
         outputStatement = ' is <u>Functional</u>, water is supplied to all households throughout the year.';
     }
-    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== 'undefined' && noOfMonths >= 6 && pump === 'Yes') {
+    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== '' && noOfMonths >= 6 && pump === 'Yes') {
       outputStatement = ` is <u>Non-functional</u>, water not supplied during ${noOfMonths} months and ${householdsExcluded} households excluded.`;
     }
     else {
@@ -289,7 +256,7 @@ for (var i=0; i<1; i++) {
       waterStatus === 'Water available throughout year' && pump === 'Yes' && pumpStatus === 'Running') {
         outputStatement = ' is <u>Functional</u>, water is supplied to all households throughout the year.';
     }
-    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== 'undefined' && noOfMonths >= 6 && pump === 'Yes') {
+    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== '' && noOfMonths >= 6 && pump === 'Yes') {
       outputStatement = ` is <u>Non-functional</u>, water not supplied during ${noOfMonths} months and ${householdsExcluded} households excluded.`;
     }
     else {
@@ -308,7 +275,7 @@ for (var i=0; i<1; i++) {
       waterStatus === 'Water available throughout year' && pump === 'Yes' && pumpStatus === 'Running') {
         outputStatement = ' is <u>Functional</u>, water is supplied to all households throughout the year.';
     }
-    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== 'undefined' && noOfMonths >= 6 && pump === 'Yes') {
+    else if (waterStatusAcToCommitee === 'No' && waterStatus !== 'Water available throughout year' && waterStatus !== '' && noOfMonths >= 6 && pump === 'Yes') {
       outputStatement = ` is <u>Non-functional</u>, water not supplied during ${noOfMonths} months and ${householdsExcluded} households excluded.`;
     }
     else {
@@ -316,7 +283,7 @@ for (var i=0; i<1; i++) {
     }
   }
   else {
-    waterStatus = 'undefined';
+    waterStatus = '';
     outputStatement = 'water source could be defined';
   }
 
@@ -334,13 +301,13 @@ for (var i=0; i<1; i++) {
   var gravitySpringStatement = '';
   var outputCountStatement = '';
 
-  if (borewellCount !== 'undefined' && Number(borewellCount) !== 0) {
+  if (borewellCount !== '' && Number(borewellCount) !== 0) {
     borewellStatement += borewellCount + (Number(borewellCount) > 1 ? ' Borewells' : ' Borewell');
   }
-  if (dugwellCount !== 'undefined' && Number(dugwellCount) !== 0) {
+  if (dugwellCount !== '' && Number(dugwellCount) !== 0) {
     dugwellStatement += dugwellCount + (Number(dugwellCount) > 1 ? ' Dugwells' : ' Dugwell');
   }
-  if (gravitySpringCount !== 'undefined' && Number(gravitySpringCount) !== 0) {
+  if (gravitySpringCount !== '' && Number(gravitySpringCount) !== 0) {
     gravitySpringStatement += gravitySpringCount + (Number(gravitySpringCount) > 1 ? ' Gravity Springs' : ' Gravity Spring');
   }
   if (gravitySpringStatement !== '' && borewellStatement !== '' && dugwellStatement !== '') {
@@ -376,12 +343,28 @@ for (var i=0; i<1; i++) {
   var an = 'NA';
   var of = String(xlData[i][columnNames[395]]);
   var qo = String(xlData[i][columnNames[456]]);
+  var lw = xlData[i][columnNames[334]];
+  var ma = xlData[i][columnNames[338]];
+  var lwma = Number(lw) + Number(ma);
+  
+  var mb = xlData[i][columnNames[339]];
+  var mc = xlData[i][columnNames[340]];
+  var mbmc = '';
+  if (String(mb) === 'Other (please specify)') {
+    mbmc = String(mc);
+  }
+  else if(String(mb) === '' && String(mc) === '') {
+    mbmc = '';
+  }
+  else {
+    mbmc = String(mb);
+  }
 
   var mi = String(xlData[i][columnNames[346]]);
   var mk = '';
   if (mi === 'Yes') {
     mk = 'None';
-    if (String(xlData[i][columnNames[348]]) !== 'undefined') {
+    if (String(xlData[i][columnNames[348]]) !== '') {
       mk = String(xlData[i][columnNames[348]]);
     }
     if (String(xlData[i][columnNames[348]]) !== 'Other (please specify)') {
@@ -390,17 +373,17 @@ for (var i=0; i<1; i++) {
     mi = mi + ', ' + mk;
   }
   
-  if (String(xlData[i][columnNames[307]]) !== 'undefined')
+  if (String(xlData[i][columnNames[307]]) !== '')
     kv = Number(xlData[i][columnNames[307]]);
-  if (String(xlData[i][columnNames[323]]) !== 'undefined')
+  if (String(xlData[i][columnNames[323]]) !== '')
     ll = Number(xlData[i][columnNames[323]]);
-  if (String(xlData[i][columnNames[39]]) !== 'undefined')
+  if (String(xlData[i][columnNames[39]]) !== '')
     an = Number(xlData[i][columnNames[39]]);
-  if (of !== 'undefined')
+  if (of !== '')
     of = Number(xlData[i][columnNames[395]]);
   else
     of = 0;
-  if (qo !== 'undefined')
+  if (qo !== '')
     qo = Number(xlData[i][columnNames[456]]);
   else
     qo = 0;
@@ -425,7 +408,7 @@ for (var i=0; i<1; i++) {
 	
 
 	var html = createHtml({
-	  title: `Village ${i+1}`,
+	  title: `${xlData[i][columnNames[16]]}`,
 	  lang: 'en',
 	  css: '../style.css',
 	  head: `<meta name="description" content="report">
@@ -462,18 +445,18 @@ for (var i=0; i<1; i++) {
     <table class="ui celled selectable small compact table" style="font-size: 13px">
   <tbody>
     <tr class="center aligned">
-      <td><strong>${xlData[i][columnNames[40]]} </strong><br>Commitee exists</td>
-      <td><strong>${xlData[i][columnNames[54]]} </strong><br>VWSC members</td>
-      <td><strong>${xlData[i][columnNames[56]]} </strong><br>Women VWSC members</td>
-      <td><strong>${xlData[i][columnNames[68]]} </strong><br>VWSC leadership change</td>
-      <td><strong>${xlData[i][columnNames[52]]} </strong><br>Meetings in 12 months</td>
-      <td><strong>${xlData[i][columnNames[51]]} </strong><br>Meetings in register</td>
+      <td><strong>${xlData[i][columnNames[40]] || 'N/A'} </strong><br>Commitee exists</td>
+      <td><strong>${xlData[i][columnNames[54]] || '0'} </strong><br>VWSC members</td>
+      <td><strong>${xlData[i][columnNames[56]] || '0'} </strong><br>Women VWSC members</td>
+      <td><strong>${xlData[i][columnNames[68]] || '0'} </strong><br>VWSC leadership change</td>
+      <td><strong>${xlData[i][columnNames[52]] || '0'} </strong><br>Meetings in 12 months</td>
+      <td><strong>${xlData[i][columnNames[51]] || '0'} </strong><br>Meetings in register</td>
     </tr>
     <tr class="center aligned">
-      <td><strong>${xlData[i][columnNames[43]]} </strong><br>Committee registration</td>
-      <td><strong>${xlData[i][columnNames[161]]} </strong><br>Maintenance fund</td>
-      <td><strong>${xlData[i][columnNames[233]]} </strong><br>Corpus fund</td>
-      <td><strong>${xlData[i][columnNames[143]]} </strong><br>PAN</td>
+      <td><strong>${xlData[i][columnNames[43]] || 'N/A'} </strong><br>Committee registration</td>
+      <td><strong>${xlData[i][columnNames[161]] || '0'} </strong><br>Maintenance fund</td>
+      <td><strong>${xlData[i][columnNames[233]] || 'N/A'} </strong><br>Corpus fund</td>
+      <td><strong>${xlData[i][columnNames[143]] || 'N/A'} </strong><br>PAN</td>
       <td><strong>${regist} </strong><br>Registers</td>
       <td><strong>${femaleAtt} %  </strong><br>Female Attendance</td>
     </tr>
@@ -489,26 +472,26 @@ for (var i=0; i<1; i++) {
     </tr>
     <tr>
       <td>User Fee per household</td>
-      <td><strong>${userFee}</strong></td>
+      <td><strong>${xlData[i][columnNames[208]] || '0'}</strong></td>
     </tr>
     <tr>
       <td>Total Revenues</td>
-      <td><strong>${xlData[i][columnNames[126]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[126]] || '0'}</strong></td>
     </tr>
     <tr>
       <td colspan="2" style="text-transform: uppercase;"><strong>Monthly Expenses</strong></td>
     </tr>
     <tr>
       <td>Electricity charges</td>
-      <td><strong>${xlData[i][columnNames[124]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[124]] || '0'}</strong></td>
     </tr>
     <tr>
       <td>Operator salary in cash</td>
-      <td><strong>${xlData[i][columnNames[110]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[110]] || '0'}</strong></td>
     </tr>
     <tr>
       <td>Total Expenses</td>
-      <td><strong>${xlData[i][columnNames[112]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[112]] || '0'}</strong></td>
     </tr>
     <tr>
       <td style="color: black;">Net Monthly Income</td>
@@ -525,11 +508,11 @@ for (var i=0; i<1; i++) {
   <tbody>
     <tr>
       <td>Village has corpus fund?</td>
-      <td><strong>${xlData[i][columnNames[233]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[233]] || 'N/A'}</strong></td>
     </tr>
     <tr>
       <td>Corpus fund amount</td>
-      <td><strong>${xlData[i][columnNames[235]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[235]] || 'N/A'}</strong></td>
     </tr>
     <tr>
       <td>Households contributed</td>
@@ -537,7 +520,7 @@ for (var i=0; i<1; i++) {
     </tr>
     <tr>
       <td>No of times corpus fund was used</td>
-      <td><strong>${xlData[i][columnNames[242]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[242]] || 'N/A'}</strong></td>
     </tr>
     <tr>
       <td>Corpus funds used for</td>
@@ -549,11 +532,11 @@ for (var i=0; i<1; i++) {
     </tr>
     <tr>
       <td>Maturity amount</td>
-      <td><strong>${xlData[i][columnNames[263]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[263]] || 'N/A'}</strong></td>
     </tr>
     <tr>
       <td>Interest Rate</td>
-      <td><strong>${xlData[i][columnNames[265]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[265]] || 'N/A'}</strong></td>
     </tr>
     </tbody>
 </table>
@@ -603,7 +586,7 @@ for (var i=0; i<1; i++) {
   ]);
 
   // Configuration for the Timeline
-  var options = {};
+  var options = {height: '160px'};
 
   // Create a Timeline
   var timeline = new vis.Timeline(container, items, options);
