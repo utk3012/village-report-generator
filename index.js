@@ -29,34 +29,39 @@ function GetFormattedDate(ddd) {
   return day + "-" + month + "-" + year1;
 }
 
-async function loadImage(cap1, cap2, cap3, cap4, cap5, cap6, cap7, cap8, cap9, cap10, cap11, cap12, cap13, cap14, cap15, cap16, cap17, cap18, cap19, cap20, availability, fileName) {
+async function loadImage(sourceCode, cap1, cap2, cap3, cap4, cap5, cap6, cap7, cap8, cap9, cap10, cap11, cap12, cap13, cap14, cap15, cap16, cap17, cap18, cap19, cap20, availability, fileName) {
   try {
-    const image = await Jimp.read('water.png');
+    const shiftVal = String(cap1).length * 17 + (sourceCode > 1 ? 490 : 557);
+    const image = await Jimp.read(( sourceCode === 1 ? 'gravity spring.png' : 'well.png'));
+    const coordinates = [390, 413, 436, 465];
+    let fac = (sourceCode === 1 ? -1 : 0);
     const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
     const font1 = await Jimp.loadFont('fonts/greyfont.fnt');
     const font2 = await Jimp.loadFont('fonts/redfont.fnt');
     const font3 = await Jimp.loadFont(Jimp.FONT_SANS_16_BLACK);
+    const font4 = await Jimp.loadFont('fonts/size24font.fnt');
           image
-          .print(font, 549, 50, cap1)
+          .print(font, (sourceCode > 1 ? 480 : 549), 50, cap1)
+          .print(font3, shiftVal, 60, 'litres')
           .print(font, 743, 130, cap2)
           .print(font, 920, 135, cap3)
           .print(font, 885, 357, cap4)
           .print(font, 650, 362, cap5)
           .print(font, 359, 315, cap6)
-          .print(font, 417, 420, cap7)
-          .print(availability[0] ? font1 : font2, 60, 390, cap8)
-          .print(availability[1] ? font1 : font2, 100, 390, cap9)
-          .print(availability[2] ? font1 : font2, 140, 390, cap10)
-          .print(availability[3] ? font1 : font2, 182, 390, cap11)
-          .print(availability[4] ? font1 : font2, 60, 413, cap12)
-          .print(availability[5] ? font1 : font2, 100, 413, cap13)
-          .print(availability[6] ? font1 : font2, 140, 413, cap14)
-          .print(availability[7] ? font1 : font2, 182, 413, cap15)
-          .print(availability[8] ? font1 : font2, 60, 436, cap16)
-          .print(availability[9] ? font1 : font2, 100, 436, cap17)
-          .print(availability[10] ? font1 : font2, 140, 436, cap18)
-          .print(availability[11] ? font1 : font2, 182, 436, cap19)
-          .print(font3, 60, 465, cap20)
+          .print(font4, 417, 420, cap7)
+          .print(availability[0] ? font1 : font2, 60, coordinates[0] + fac * 60, cap8)
+          .print(availability[1] ? font1 : font2, 100, coordinates[0] + fac * 60, cap9)
+          .print(availability[2] ? font1 : font2, 140, coordinates[0] + fac * 60, cap10)
+          .print(availability[3] ? font1 : font2, 182, coordinates[0] + fac * 60, cap11)
+          .print(availability[4] ? font1 : font2, 60, coordinates[1] + fac * 60, cap12)
+          .print(availability[5] ? font1 : font2, 100, coordinates[1] + fac * 60, cap13)
+          .print(availability[6] ? font1 : font2, 140, coordinates[1] + fac * 60, cap14)
+          .print(availability[7] ? font1 : font2, 182, coordinates[1] + fac * 60, cap15)
+          .print(availability[8] ? font1 : font2, 60, coordinates[2] + fac * 60, cap16)
+          .print(availability[9] ? font1 : font2, 100, coordinates[2] + fac * 60, cap17)
+          .print(availability[10] ? font1 : font2, 140, coordinates[2] + fac * 60, cap18)
+          .print(availability[11] ? font1 : font2, 182, coordinates[2] + fac * 60, cap19)
+          .print(font3, 60, coordinates[3] + fac * 60, cap20)
             .write(fileName);
   }
   catch (err) {
@@ -87,7 +92,7 @@ for (var i=0; i<183; i++) {
 
 	var registers = xlData[i][columnNames[75]];
 
-	var netIncome = 'N/A';
+	var netIncome = '';
 	if (String(xlData[i][columnNames[126]]) !== '' && String(xlData[i][columnNames[112]]) !== '')
 		var netIncome = Number(xlData[i][columnNames[126]]) - Number(xlData[i][columnNames[112]]);
 	
@@ -120,7 +125,7 @@ for (var i=0; i<183; i++) {
     cfund = 'None';
   }
 
-  var MaturityDate = 'N/A';
+  var MaturityDate = 'N/A (No FD)';
   if (String(xlData[i][columnNames[267]]) !== '')
     MaturityDate = GetFormattedDate(xlData[i][columnNames[267]].toISOString());
 
@@ -320,7 +325,7 @@ for (var i=0; i<183; i++) {
     outputCountStatement = dugwellStatement + ' and ' + gravitySpringStatement + ' are used for Water supply system.';
   }
   if (gravitySpringStatement === '' && borewellStatement !== '' && dugwellStatement !== '') {
-    outputCountStatement = borewellStatement + ' and ' + dugwellStatement + 'are used for Water supply system.';
+    outputCountStatement = borewellStatement + ' and ' + dugwellStatement + ' are used for Water supply system.';
   }
   if (gravitySpringStatement !== '' && borewellStatement === '' && dugwellStatement === '') {
     outputCountStatement = gravitySpringStatement + (Number(gravitySpringCount) > 1 ? ' are' : ' is') + ' used for Water supply system.';
@@ -367,7 +372,7 @@ for (var i=0; i<183; i++) {
     if (String(xlData[i][columnNames[348]]) !== '') {
       mk = String(xlData[i][columnNames[348]]);
     }
-    if (String(xlData[i][columnNames[348]]) !== 'Other (please specify)') {
+    if (String(xlData[i][columnNames[348]]) === 'Other (please specify)') {
       mk = String(xlData[i][columnNames[349]]);
     }
     mi = mi + ', ' + mk;
@@ -402,13 +407,13 @@ for (var i=0; i<183; i++) {
     }
   }
 
-  loadImage(kv, ll, an, lwma, lw, String(of+qo), mi, 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', availableThroughout, availability, `output-images/water${i+1}.png`);
+  loadImage(sourceCode, kv, ll, an, lwma, lw, String(of+qo), mi, 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', availableThroughout, availability, `output-images/water${i+1}.png`);
 
   /* ============================================= End of Image value retrival ===========================================*/
 	
 
 	var html = createHtml({
-	  title: `${xlData[i][columnNames[16]]}`,
+	  title: `${xlData[i][columnNames[16]]} - ${i+1}`,
 	  lang: 'en',
 	  css: '../style.css',
 	  head: `<meta name="description" content="report">
@@ -419,12 +424,12 @@ for (var i=0; i<183; i++) {
    <div id="container">
       <div class="center">
         <span id="header1">
-            <strong>Village Water and Sanitation Status Assessment Report</strong> : ${xlData[i][columnNames[16]]}
+            <strong>Village Water and Sanitation Status Assessment Report : ${xlData[i][columnNames[16]]}</strong>
         </span>
         <br>
         <span id="header2">${xlData[i][columnNames[15]]} Gram Panchayat, ${xlData[i][columnNames[14]]} Block, ${xlData[i][columnNames[13]]} District</span>
         <br>
-        <span style="font-size: 17px;">Completed in ${year} &emsp; | &emsp; ${xlData[i][columnNames[20]]} Households in ${year} &emsp; | &emsp; ${xlData[i][columnNames[21]]} Households in 2018</span>
+        <span style="font-size: 20px;">Completed in ${year} &emsp; | &emsp; ${xlData[i][columnNames[20]]} Households in ${year} &emsp; | &emsp; ${xlData[i][columnNames[21]]} Households in 2018</span>
       </div>
     <hr>
     <span class="header4"><strong>Water supply is ${wssSetup} old; ${outputStatement}</strong></span>
@@ -445,18 +450,18 @@ for (var i=0; i<183; i++) {
     <table class="ui celled selectable small compact table" style="font-size: 13px">
   <tbody>
     <tr class="center aligned">
-      <td><strong>${xlData[i][columnNames[40]] || 'N/A'} </strong><br>Commitee exists</td>
-      <td><strong>${xlData[i][columnNames[54]] || '0'} </strong><br>VWSC members</td>
-      <td><strong>${xlData[i][columnNames[56]] || '0'} </strong><br>Women VWSC members</td>
-      <td><strong>${xlData[i][columnNames[68]] || '0'} </strong><br>VWSC leadership change</td>
-      <td><strong>${xlData[i][columnNames[52]] || '0'} </strong><br>Meetings in 12 months</td>
-      <td><strong>${xlData[i][columnNames[51]] || '0'} </strong><br>Meetings in register</td>
+      <td><strong>${xlData[i][columnNames[40]]} </strong><br>Commitee exists</td>
+      <td><strong>${xlData[i][columnNames[54]]} </strong><br>VWSC members</td>
+      <td><strong>${xlData[i][columnNames[56]]} </strong><br>Women VWSC members</td>
+      <td><strong>${xlData[i][columnNames[68]]} </strong><br>VWSC leadership change</td>
+      <td><strong>${xlData[i][columnNames[52]]} </strong><br>Meetings in 12 months</td>
+      <td><strong>${xlData[i][columnNames[51]]} </strong><br>Meetings in register</td>
     </tr>
     <tr class="center aligned">
-      <td><strong>${xlData[i][columnNames[43]] || 'N/A'} </strong><br>Committee registration</td>
-      <td><strong>${xlData[i][columnNames[161]] || '0'} </strong><br>Maintenance fund</td>
-      <td><strong>${xlData[i][columnNames[233]] || 'N/A'} </strong><br>Corpus fund</td>
-      <td><strong>${xlData[i][columnNames[143]] || 'N/A'} </strong><br>PAN</td>
+      <td><strong>${xlData[i][columnNames[43]]} </strong><br>Committee registration</td>
+      <td><strong>${xlData[i][columnNames[161]]} </strong><br>Maintenance fund</td>
+      <td><strong>${xlData[i][columnNames[233]]} </strong><br>Corpus fund</td>
+      <td><strong>${xlData[i][columnNames[143]] || 'No'} </strong><br>PAN</td>
       <td><strong>${regist} </strong><br>Registers</td>
       <td><strong>${femaleAtt} %  </strong><br>Female Attendance</td>
     </tr>
@@ -476,22 +481,22 @@ for (var i=0; i<183; i++) {
     </tr>
     <tr>
       <td>Total Revenues</td>
-      <td><strong>${xlData[i][columnNames[126]] || '0'}</strong></td>
+      <td><strong>${xlData[i][columnNames[126]]}</strong></td>
     </tr>
     <tr>
       <td colspan="2" style="text-transform: uppercase;"><strong>Monthly Expenses</strong></td>
     </tr>
     <tr>
       <td>Electricity charges</td>
-      <td><strong>${xlData[i][columnNames[124]] || '0'}</strong></td>
+      <td><strong>${xlData[i][columnNames[124]]}</strong></td>
     </tr>
     <tr>
       <td>Operator salary in cash</td>
-      <td><strong>${xlData[i][columnNames[110]] || '0'}</strong></td>
+      <td><strong>${xlData[i][columnNames[110]]}</strong></td>
     </tr>
     <tr>
       <td>Total Expenses</td>
-      <td><strong>${xlData[i][columnNames[112]] || '0'}</strong></td>
+      <td><strong>${xlData[i][columnNames[112]]}</strong></td>
     </tr>
     <tr>
       <td style="color: black;">Net Monthly Income</td>
@@ -508,11 +513,11 @@ for (var i=0; i<183; i++) {
   <tbody>
     <tr>
       <td>Village has corpus fund?</td>
-      <td><strong>${xlData[i][columnNames[233]] || 'N/A'}</strong></td>
+      <td><strong>${xlData[i][columnNames[233]]}</strong></td>
     </tr>
     <tr>
       <td>Corpus fund amount</td>
-      <td><strong>${xlData[i][columnNames[235]] || 'N/A'}</strong></td>
+      <td><strong>${xlData[i][columnNames[235]]}</strong></td>
     </tr>
     <tr>
       <td>Households contributed</td>
@@ -520,7 +525,7 @@ for (var i=0; i<183; i++) {
     </tr>
     <tr>
       <td>No of times corpus fund was used</td>
-      <td><strong>${xlData[i][columnNames[242]] || 'N/A'}</strong></td>
+      <td><strong>${xlData[i][columnNames[242]] || '0'}</strong></td>
     </tr>
     <tr>
       <td>Corpus funds used for</td>
@@ -532,11 +537,11 @@ for (var i=0; i<183; i++) {
     </tr>
     <tr>
       <td>Maturity amount</td>
-      <td><strong>${xlData[i][columnNames[263]] || 'N/A'}</strong></td>
+      <td><strong>${xlData[i][columnNames[263]] || 'N/A (No FD)'}</strong></td>
     </tr>
     <tr>
       <td>Interest Rate</td>
-      <td><strong>${xlData[i][columnNames[265]] || 'N/A'}</strong></td>
+      <td><strong>${xlData[i][columnNames[265]] || 'N/A (No FD)'}</strong></td>
     </tr>
     </tbody>
 </table>
