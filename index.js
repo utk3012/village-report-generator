@@ -585,7 +585,7 @@ for (var i=0; i<183; i++) {
     {id: 1, content: 'GV first visited', start: '${tim1}'},
     {id: 2, content: 'TBR work began', start: '${tim2}'},
     {id: 3, content: 'TBR 100% complete', start: '${tim3}'},
-    {id: 4, content: 'Commitee formed', start: '${tim4}'},
+    {id: 4, content: 'Committee formed', start: '${tim4}'},
     {id: 5, content: 'WSS work began', start: '${tim5}'},
     {id: 6, content: 'WSS work complete', start: '${tim6}'}
   ]);
