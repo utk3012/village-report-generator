@@ -42,7 +42,7 @@ async function loadImage(sourceCode, cap1, cap2, cap3, cap4, cap5, cap6, cap7, c
     const font4 = await Jimp.loadFont('fonts/size24font.fnt');
           image
           .print(font, (sourceCode > 1 ? 480 : 549), 50, cap1)
-          .print(font3, shiftVal, 60, 'litres')
+          .print(font3, shiftVal, 60, (cap1 === '0' ? '' : 'litres'))
           .print(font, 743, 130, cap2)
           .print(font, 920, 135, cap3)
           .print(font, 885, 357, cap4)
@@ -69,16 +69,25 @@ async function loadImage(sourceCode, cap1, cap2, cap3, cap4, cap5, cap6, cap7, c
   }
 }
 
-for (var i=0; i<183; i++) {
+for (var i=0; i<184; i++) {
 	var year = xlData[i][columnNames[19]];
 	var commitee = String(xlData[i][columnNames[41]]);
   
   if (commitee === 'Other (please specify)') {
-    commitee = xlData[i][columnNames[42]];
+    commitee = String(xlData[i][columnNames[42]]);
+    if (commitee.toLowerCase() === 'no' || commitee.toLowerCase() === 'no name' || commitee.indexOf('They d') !== -1) {
+      commitee = 'Officially not registered';
+    }
   }
+
+  var presidentName = String(xlData[i][columnNames[57]]);
+  if (presidentName === '0' || presidentName === '') {
+    presidentName = 'Not Elected Yet';
+  }
+
   year = String(year).substring(11,15);
 
-  var femaleAtt = 'N/A';
+  var femaleAtt = 'No Attendees';
   if (String(xlData[i][columnNames[95]]) !== '' && String(xlData[i][columnNames[97]]) !== '') {
     var femaleAtt1 = Number(xlData[i][columnNames[95]]);
 	  var femaleAtt2 = Number(xlData[i][columnNames[97]]);
@@ -92,9 +101,20 @@ for (var i=0; i<183; i++) {
 
 	var registers = xlData[i][columnNames[75]];
 
-	var netIncome = '';
-	if (String(xlData[i][columnNames[126]]) !== '' && String(xlData[i][columnNames[112]]) !== '')
-		var netIncome = Number(xlData[i][columnNames[126]]) - Number(xlData[i][columnNames[112]]);
+  /*  *************************************** CALCULATING NET INCOME ***************************************************** */
+  var netExpense = 0;
+  if (String(xlData[i][columnNames[110]]) !== '') {
+    netExpense += Number(xlData[i][columnNames[110]]);
+  }
+  if (String(xlData[i][columnNames[112]]) !== '') {
+    netExpense += Number(xlData[i][columnNames[112]]);
+  }
+  if (String(xlData[i][columnNames[124]]) !== '') {
+    netExpense += Number(xlData[i][columnNames[124]]);
+  }
+	var netIncome = 0;
+	if (String(xlData[i][columnNames[126]]) !== '')
+		var netIncome = Number(xlData[i][columnNames[126]]) - netExpense;
 	
 	var regist = 0;
 	if (String(xlData[i][columnNames[75]]) !== '')
@@ -136,7 +156,7 @@ for (var i=0; i<183; i++) {
 	var tim5 = xlData[i][columnNames[280]];
 	var tim6 = xlData[i][columnNames[281]];
 
-	var subsImg1 = '';
+	var subsImg1 = 'No Water tank';
 	var waterSourceImg = '';
 	var ia = 0;
 	var ig = 0;
@@ -145,6 +165,10 @@ for (var i=0; i<183; i++) {
     ia = Number(xlData[i][columnNames[234]]);
   if (String(xlData[i][columnNames[240]]) !== '')
     ig = Number(xlData[i][columnNames[240]]);
+  if (String(xlData[i][columnNames[234]]) === '' && String(xlData[i][columnNames[240]]) === '') {
+    ia = 'Not Applicable';
+    ig = '';
+  }
 
   if (String(xlData[i][columnNames[304]]) !== '')
     subsImg1 = `<img src="${xlData[i][columnNames[304]]}">`;
@@ -343,7 +367,7 @@ for (var i=0; i<183; i++) {
 
   /* ============================================= Image value retrival ==============================================*/
 
-  var kv = 'NA';
+  var kv = '0';
   var ll = 'NA';
   var an = 'NA';
   var of = String(xlData[i][columnNames[395]]);
@@ -407,7 +431,11 @@ for (var i=0; i<183; i++) {
     }
   }
 
-  loadImage(sourceCode, kv, ll, an, lwma, lw, String(of+qo), mi, 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', availableThroughout, availability, `output-images/water${i+1}.png`);
+  (async function() {
+    await loadImage(sourceCode, kv, ll, an, lwma, lw, String(of+qo), mi,
+      'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', availableThroughout,
+      availability, `output-images/water${i+1}.png`);
+  })();
 
   /* ============================================= End of Image value retrival ===========================================*/
 	
@@ -444,7 +472,7 @@ for (var i=0; i<183; i++) {
     <h4 class="header4" style="margin-bottom: 5px; margin-top: 14px;">Timeline</h4>
     <div id="visualization" style="font-size: 12px"></div>
     <br>
-    <span class="header4"><strong>Village Commitee - </strong>${commitee} <strong>|</strong>  ${xlData[i][columnNames[57]]}</span>
+    <span class="header4"><strong>Village Commitee - </strong>${commitee} <strong>|</strong>  ${presidentName}</span>
     <br><br>
     <div id="tableData">
     <table class="ui celled selectable small compact table" style="font-size: 13px">
@@ -460,8 +488,8 @@ for (var i=0; i<183; i++) {
     <tr class="center aligned">
       <td><strong>${xlData[i][columnNames[43]]} </strong><br>Committee registration</td>
       <td><strong>${xlData[i][columnNames[161]]} </strong><br>Maintenance fund</td>
-      <td><strong>${xlData[i][columnNames[233]]} </strong><br>Corpus fund</td>
-      <td><strong>${xlData[i][columnNames[143]] || 'No'} </strong><br>PAN</td>
+      <td><strong>${String(xlData[i][columnNames[233]]) || 'No Corpus Fund'} </strong><br>Corpus fund</td>
+      <td><strong>${String(xlData[i][columnNames[143]]) || 'No'} </strong><br>PAN</td>
       <td><strong>${regist} </strong><br>Registers</td>
       <td><strong>${femaleAtt} %  </strong><br>Female Attendance</td>
     </tr>
@@ -473,33 +501,33 @@ for (var i=0; i<183; i++) {
     <table class="ui celled selectable small compact table" style="font-size: 13px">
   <tbody>
     <tr>
-      <td colspan="2" style="text-transform: uppercase;"><strong>Monthly Revenue</strong></td>
+      <td colspan="2" style="text-transform: uppercase;"><strong>Annual Revenue</strong></td>
     </tr>
     <tr>
       <td>User Fee per household</td>
-      <td><strong>${xlData[i][columnNames[208]] || '0'}</strong></td>
+      <td><strong>${xlData[i][columnNames[208]] || 'No User Fee'}</strong></td>
     </tr>
     <tr>
       <td>Total Revenues</td>
-      <td><strong>${xlData[i][columnNames[126]]}</strong></td>
+      <td><strong>${xlData[i][columnNames[126]] || '0'}</strong></td>
     </tr>
     <tr>
-      <td colspan="2" style="text-transform: uppercase;"><strong>Monthly Expenses</strong></td>
+      <td colspan="2" style="text-transform: uppercase;"><strong>Annual Expenses</strong></td>
     </tr>
     <tr>
       <td>Electricity charges</td>
-      <td><strong>${xlData[i][columnNames[124]]}</strong></td>
+      <td><strong>${String(xlData[i][columnNames[110]]) || 'Not Applicable'}</strong></td>
     </tr>
     <tr>
       <td>Operator salary in cash</td>
-      <td><strong>${xlData[i][columnNames[110]]}</strong></td>
+      <td><strong>${String(xlData[i][columnNames[112]]) || 'Not Applicable'}</strong></td>
     </tr>
     <tr>
-      <td>Total Expenses</td>
-      <td><strong>${xlData[i][columnNames[112]]}</strong></td>
+      <td>Other Expenses</td>
+      <td><strong>${String(xlData[i][columnNames[124]]) || '0'}</strong></td>
     </tr>
     <tr>
-      <td style="color: black;">Net Monthly Income</td>
+      <td style="color: black; text-transform: uppercase;"><strong>Net Annual Income</strong></td>
       <td><strong>${netIncome}</strong></td>
     </tr>
     </tbody>
@@ -513,11 +541,11 @@ for (var i=0; i<183; i++) {
   <tbody>
     <tr>
       <td>Village has corpus fund?</td>
-      <td><strong>${xlData[i][columnNames[233]]}</strong></td>
+      <td><strong>${String(xlData[i][columnNames[233]]) || 'No Corpus Fund'}</strong></td>
     </tr>
     <tr>
       <td>Corpus fund amount</td>
-      <td><strong>${xlData[i][columnNames[235]]}</strong></td>
+      <td><strong>${String(xlData[i][columnNames[235]]) || '0'}</strong></td>
     </tr>
     <tr>
       <td>Households contributed</td>
@@ -525,7 +553,7 @@ for (var i=0; i<183; i++) {
     </tr>
     <tr>
       <td>No of times corpus fund was used</td>
-      <td><strong>${xlData[i][columnNames[242]] || '0'}</strong></td>
+      <td><strong>${String(xlData[i][columnNames[242]]) || '0'}</strong></td>
     </tr>
     <tr>
       <td>Corpus funds used for</td>
@@ -537,11 +565,11 @@ for (var i=0; i<183; i++) {
     </tr>
     <tr>
       <td>Maturity amount</td>
-      <td><strong>${xlData[i][columnNames[263]] || 'N/A (No FD)'}</strong></td>
+      <td><strong>${String(xlData[i][columnNames[263]]) || 'N/A (No FD)'}</strong></td>
     </tr>
     <tr>
       <td>Interest Rate</td>
-      <td><strong>${xlData[i][columnNames[265]] || 'N/A (No FD)'}</strong></td>
+      <td><strong>${String(xlData[i][columnNames[265]]) || 'N/A (No FD)'}</strong></td>
     </tr>
     </tbody>
 </table>
