@@ -3,9 +3,9 @@ var Jimp = require("jimp");
 var fs = require('fs');
 var createHtml = require('create-html');
 
-var workbook = XLSX.readFile('responses3.xlsx', {cellDates: true});
+var workbook = XLSX.readFile('responses.xlsx', {cellDates: true});
 var sheet_name_list = workbook.SheetNames;
-var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {defval:""});
 var columnNames = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {header: 1})[0];
 
 if (!fs.existsSync('./output-htmls')){
@@ -69,7 +69,7 @@ async function loadImage(sourceCode, cap1, cap2, cap3, cap4, cap5, cap6, cap7, c
   }
 }
 
-for (var i=0; i<184; i++) {
+for (var i=0; i<11; i++) {
 	var year = xlData[i][columnNames[19]];
 	var commitee = String(xlData[i][columnNames[41]]);
   
@@ -122,7 +122,7 @@ for (var i=0; i<184; i++) {
 
   var wssSetup = xlData[i][columnNames[281]];
   wssSetup = 2018 - Number(wssSetup.toISOString().split('-')[0]);
-  wssSetup = wssSetup + (wssSetup > 1 ? ' years' : 'year');
+  wssSetup = wssSetup + (wssSetup > 1 ? ' years' : ' year');
 
   var cfund1 = xlData[i][columnNames[243]];
   var cfund2 = xlData[i][columnNames[245]];
@@ -220,7 +220,7 @@ for (var i=0; i<184; i++) {
 
   if (sourceCode === 1) { //means gravity spring 1
     waterStatus = String(xlData[i][columnNames[500]]);
-    var noOfMonths = waterStatus.split(',').length;
+    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
     var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
@@ -239,7 +239,7 @@ for (var i=0; i<184; i++) {
     waterStatus = String(xlData[i][columnNames[378]]);
     pump = String(xlData[i][columnNames[373]]);
     pumpStatus = String(xlData[i][columnNames[394]]);
-    var noOfMonths = waterStatus.split(',').length;
+    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
     var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
@@ -258,7 +258,7 @@ for (var i=0; i<184; i++) {
     waterStatus = String(xlData[i][columnNames[412]]);
     pump = String(xlData[i][columnNames[407]]);
     pumpStatus = String(xlData[i][columnNames[426]]);
-    var noOfMonths = waterStatus.split(',').length;
+    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
     var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
@@ -277,7 +277,7 @@ for (var i=0; i<184; i++) {
     waterStatus = String(xlData[i][columnNames[441]]);
     pump = String(xlData[i][columnNames[434]]);
     pumpStatus = String(xlData[i][columnNames[457]]);
-    var noOfMonths = waterStatus.split(',').length;
+    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
     var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
@@ -296,7 +296,7 @@ for (var i=0; i<184; i++) {
     waterStatus = String(xlData[i][columnNames[472]]);
     pump = String(xlData[i][columnNames[465]]);
     pumpStatus = String(xlData[i][columnNames[486]]);
-    var noOfMonths = waterStatus.split(',').length;
+    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
     var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
@@ -491,7 +491,7 @@ for (var i=0; i<184; i++) {
       <td><strong>${String(xlData[i][columnNames[233]]) || 'No Corpus Fund'} </strong><br>Corpus fund</td>
       <td><strong>${String(xlData[i][columnNames[143]]) || 'No'} </strong><br>PAN</td>
       <td><strong>${regist} </strong><br>Registers</td>
-      <td><strong>${femaleAtt} %  </strong><br>Female Attendance</td>
+      <td><strong>${femaleAtt} ${ femaleAtt === 'No Attendees' ?  '' : '%'} </strong><br>Female Attendance</td>
     </tr>
   </tbody>
 </table>
