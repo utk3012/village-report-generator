@@ -12,6 +12,7 @@
     "create-html": "^4.1.0",
     "html-pdf": "^2.2.0",
     "jimp": "^0.5.4",
+    "readline-sync": "^1.4.9",
     "xlsx": "^0.14.0"
   }
 }

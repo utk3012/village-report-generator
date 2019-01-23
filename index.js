@@ -1,12 +1,16 @@
-var XLSX = require('xlsx');
-var Jimp = require("jimp");
-var fs = require('fs');
-var createHtml = require('create-html');
+const XLSX = require('xlsx');
+const Jimp = require("jimp");
+const fs = require('fs');
+const createHtml = require('create-html');
+const readlineSync = require('readline-sync');
 
-var workbook = XLSX.readFile('responses.xlsx', {cellDates: true});
-var sheet_name_list = workbook.SheetNames;
-var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {defval:""});
-var columnNames = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {header: 1})[0];
+const sheetNo = readlineSync.question('Input sheet index (Starts with 0) : ');
+const noOfRows = readlineSync.question('Input number of villages in the sheet : ');
+
+const workbook = XLSX.readFile('responses.xlsx', {cellDates: true});
+const sheet_name_list = workbook.SheetNames;
+const xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[sheetNo]], {defval:""});
+const columnNames = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[sheetNo]], {header: 1})[0];
 
 if (!fs.existsSync('./output-htmls')){
     fs.mkdirSync('./output-htmls');
@@ -17,9 +21,9 @@ if (!fs.existsSync('./output-images')){
 
 function GetFormattedDate(ddd) {
     dd = new Date(ddd);
-    var month = dd.getMonth() + 1;
-    var day = dd.getDate();
-    var year1 = dd.getFullYear();
+    const month = dd.getMonth() + 1;
+    const day = dd.getDate();
+    const year1 = dd.getFullYear();
     if (month < 10) {
       month = '0' + month;
     }
@@ -69,9 +73,9 @@ async function loadImage(sourceCode, cap1, cap2, cap3, cap4, cap5, cap6, cap7, c
   }
 }
 
-for (var i=0; i<11; i++) {
-	var year = xlData[i][columnNames[19]];
-	var commitee = String(xlData[i][columnNames[41]]);
+for (let i=0; i<noOfRows; i++) {
+	let year = xlData[i][columnNames[19]];
+	let commitee = String(xlData[i][columnNames[41]]);
   
   if (commitee === 'Other (please specify)') {
     commitee = String(xlData[i][columnNames[42]]);
@@ -80,17 +84,17 @@ for (var i=0; i<11; i++) {
     }
   }
 
-  var presidentName = String(xlData[i][columnNames[57]]);
+  let presidentName = String(xlData[i][columnNames[57]]);
   if (presidentName === '0' || presidentName === '') {
     presidentName = 'Not Elected Yet';
   }
 
   year = String(year).substring(11,15);
 
-  var femaleAtt = 'No Attendees';
+  let femaleAtt = 'No Attendees';
   if (String(xlData[i][columnNames[95]]) !== '' && String(xlData[i][columnNames[97]]) !== '') {
-    var femaleAtt1 = Number(xlData[i][columnNames[95]]);
-	  var femaleAtt2 = Number(xlData[i][columnNames[97]]);
+    let femaleAtt1 = Number(xlData[i][columnNames[95]]);
+	  let femaleAtt2 = Number(xlData[i][columnNames[97]]);
     if (femaleAtt1 + femaleAtt2 === 0) {
       femaleAtt = 0;
     }
@@ -99,10 +103,10 @@ for (var i=0; i<11; i++) {
     }
   }
 
-	var registers = xlData[i][columnNames[75]];
+	let registers = xlData[i][columnNames[75]];
 
   /*  *************************************** CALCULATING NET INCOME ***************************************************** */
-  var netExpense = 0;
+  let netExpense = 0;
   if (String(xlData[i][columnNames[110]]) !== '') {
     netExpense += Number(xlData[i][columnNames[110]]);
   }
@@ -112,23 +116,23 @@ for (var i=0; i<11; i++) {
   if (String(xlData[i][columnNames[124]]) !== '') {
     netExpense += Number(xlData[i][columnNames[124]]);
   }
-	var netIncome = 0;
+	let netIncome = 0;
 	if (String(xlData[i][columnNames[126]]) !== '')
-		var netIncome = Number(xlData[i][columnNames[126]]) - netExpense;
+		netIncome = Number(xlData[i][columnNames[126]]) - netExpense;
 	
-	var regist = 0;
+	let regist = 0;
 	if (String(xlData[i][columnNames[75]]) !== '')
 		regist = String(xlData[i][columnNames[75]]).split(',').length;
 
-  var wssSetup = xlData[i][columnNames[281]];
+  let wssSetup = xlData[i][columnNames[281]];
   wssSetup = 2018 - Number(wssSetup.toISOString().split('-')[0]);
   wssSetup = wssSetup + (wssSetup > 1 ? ' years' : ' year');
 
-  var cfund1 = xlData[i][columnNames[243]];
-  var cfund2 = xlData[i][columnNames[245]];
-  var cfund3 = xlData[i][columnNames[247]];
-  var cfund4 = xlData[i][columnNames[249]];
-  var cfund = '';
+  let cfund1 = xlData[i][columnNames[243]];
+  let cfund2 = xlData[i][columnNames[245]];
+  let cfund3 = xlData[i][columnNames[247]];
+  let cfund4 = xlData[i][columnNames[249]];
+  let cfund = '';
   if (String(cfund1) !== '' && Number(cfund1) === 1) {
     cfund += 'building new toilet; '
   }
@@ -145,21 +149,21 @@ for (var i=0; i<11; i++) {
     cfund = 'None';
   }
 
-  var MaturityDate = 'N/A (No FD)';
+  let MaturityDate = 'N/A (No FD)';
   if (String(xlData[i][columnNames[267]]) !== '')
     MaturityDate = GetFormattedDate(xlData[i][columnNames[267]].toISOString());
 
-	var tim1 = xlData[i][columnNames[17]];
-	var tim2 = xlData[i][columnNames[18]];
-	var tim3 = xlData[i][columnNames[19]];
-	var tim4 = xlData[i][columnNames[44]];
-	var tim5 = xlData[i][columnNames[280]];
-	var tim6 = xlData[i][columnNames[281]];
+	const tim1 = xlData[i][columnNames[17]];
+	const tim2 = xlData[i][columnNames[18]];
+	const tim3 = xlData[i][columnNames[19]];
+	const tim4 = xlData[i][columnNames[44]];
+	const tim5 = xlData[i][columnNames[280]];
+	const tim6 = xlData[i][columnNames[281]];
 
-	var subsImg1 = 'No Water tank';
-	var waterSourceImg = '';
-	var ia = 0;
-	var ig = 0;
+	let subsImg1 = 'No Water tank';
+	let waterSourceImg = '';
+	let ia = 0;
+	let ig = 0;
 
   if (String(xlData[i][columnNames[234]]) !== '')
     ia = Number(xlData[i][columnNames[234]]);
@@ -173,7 +177,7 @@ for (var i=0; i<11; i++) {
   if (String(xlData[i][columnNames[304]]) !== '')
     subsImg1 = `<img src="${xlData[i][columnNames[304]]}">`;
 
-  var sourceCode = 0;
+  let sourceCode = 0;
   /*
   Gravity Spring 1: 1
   Borewell 1: 2
@@ -209,19 +213,19 @@ for (var i=0; i<11; i++) {
   }
 
   /* ============================================= Water Source functional logic ================================================== */
-  var waterStatus = '';
-  var outputStatement = '';
-  var waterStatusAcToCommitee = String(xlData[i][columnNames[296]]); // Condition 1
-  var houseHoldsNotConnected = String(xlData[i][columnNames[334]]);  // Condition 3
-  var householdsNotReciveing = String(xlData[i][columnNames[338]]);  // Condition 3
+  let waterStatus = '';
+  let outputStatement = '';
+  let waterStatusAcToCommitee = String(xlData[i][columnNames[296]]); // Condition 1
+  let houseHoldsNotConnected = String(xlData[i][columnNames[334]]);  // Condition 3
+  let householdsNotReciveing = String(xlData[i][columnNames[338]]);  // Condition 3
 
-  var pump = '';
-  var pumpStatus = '';
+  let pump = '';
+  let pumpStatus = '';
 
   if (sourceCode === 1) { //means gravity spring 1
     waterStatus = String(xlData[i][columnNames[500]]);
-    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
-    var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
+    let noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
+    let householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
     if (waterStatusAcToCommitee === 'Yes' && houseHoldsNotConnected === '0' && householdsNotReciveing === '0' &&
@@ -239,8 +243,8 @@ for (var i=0; i<11; i++) {
     waterStatus = String(xlData[i][columnNames[378]]);
     pump = String(xlData[i][columnNames[373]]);
     pumpStatus = String(xlData[i][columnNames[394]]);
-    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
-    var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
+    let noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
+    let householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
     if (waterStatusAcToCommitee === 'Yes' && houseHoldsNotConnected === '0' && householdsNotReciveing === '0' &&
@@ -258,8 +262,8 @@ for (var i=0; i<11; i++) {
     waterStatus = String(xlData[i][columnNames[412]]);
     pump = String(xlData[i][columnNames[407]]);
     pumpStatus = String(xlData[i][columnNames[426]]);
-    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
-    var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
+    let noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
+    let householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
     if (waterStatusAcToCommitee === 'Yes' && houseHoldsNotConnected === '0' && householdsNotReciveing === '0' &&
@@ -277,8 +281,8 @@ for (var i=0; i<11; i++) {
     waterStatus = String(xlData[i][columnNames[441]]);
     pump = String(xlData[i][columnNames[434]]);
     pumpStatus = String(xlData[i][columnNames[457]]);
-    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
-    var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
+    let noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
+    let householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
     if (waterStatusAcToCommitee === 'Yes' && houseHoldsNotConnected === '0' && householdsNotReciveing === '0' &&
@@ -296,8 +300,8 @@ for (var i=0; i<11; i++) {
     waterStatus = String(xlData[i][columnNames[472]]);
     pump = String(xlData[i][columnNames[465]]);
     pumpStatus = String(xlData[i][columnNames[486]]);
-    var noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
-    var householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
+    let noOfMonths = (waterStatus === 'Water available throughout year' ? 0 : waterStatus.split(',').length);
+    let householdsExcluded = Number(houseHoldsNotConnected) + Number(householdsNotReciveing);
     if (householdsExcluded === 0)
       householdsExcluded = 'no';
     if (waterStatusAcToCommitee === 'Yes' && houseHoldsNotConnected === '0' && householdsNotReciveing === '0' &&
@@ -322,13 +326,13 @@ for (var i=0; i<11; i++) {
 
   /* ============================================= Water Source count statement calculation ================================================== */
 
-  var borewellCount = String(xlData[i][columnNames[361]]);
-  var dugwellCount = String(xlData[i][columnNames[362]]);
-  var gravitySpringCount = String(xlData[i][columnNames[363]]);
-  var borewellStatement = '';
-  var dugwellStatement = '';
-  var gravitySpringStatement = '';
-  var outputCountStatement = '';
+  let borewellCount = String(xlData[i][columnNames[361]]);
+  let dugwellCount = String(xlData[i][columnNames[362]]);
+  let gravitySpringCount = String(xlData[i][columnNames[363]]);
+  let borewellStatement = '';
+  let dugwellStatement = '';
+  let gravitySpringStatement = '';
+  let outputCountStatement = '';
 
   if (borewellCount !== '' && Number(borewellCount) !== 0) {
     borewellStatement += borewellCount + (Number(borewellCount) > 1 ? ' Borewells' : ' Borewell');
@@ -367,18 +371,18 @@ for (var i=0; i<11; i++) {
 
   /* ============================================= Image value retrival ==============================================*/
 
-  var kv = '0';
-  var ll = 'NA';
-  var an = 'NA';
-  var of = String(xlData[i][columnNames[395]]);
-  var qo = String(xlData[i][columnNames[456]]);
-  var lw = xlData[i][columnNames[334]];
-  var ma = xlData[i][columnNames[338]];
-  var lwma = Number(lw) + Number(ma);
+  let kv = '0';
+  let ll = 'NA';
+  let an = 'NA';
+  let of = String(xlData[i][columnNames[395]]);
+  let qo = String(xlData[i][columnNames[456]]);
+  let lw = xlData[i][columnNames[334]];
+  let ma = xlData[i][columnNames[338]];
+  let lwma = Number(lw) + Number(ma);
   
-  var mb = xlData[i][columnNames[339]];
-  var mc = xlData[i][columnNames[340]];
-  var mbmc = '';
+  let mb = xlData[i][columnNames[339]];
+  let mc = xlData[i][columnNames[340]];
+  let mbmc = '';
   if (String(mb) === 'Other (please specify)') {
     mbmc = String(mc);
   }
@@ -389,8 +393,8 @@ for (var i=0; i<11; i++) {
     mbmc = String(mb);
   }
 
-  var mi = String(xlData[i][columnNames[346]]);
-  var mk = '';
+  let mi = String(xlData[i][columnNames[346]]);
+  let mk = '';
   if (mi === 'Yes') {
     mk = 'None';
     if (String(xlData[i][columnNames[348]]) !== '') {
@@ -417,14 +421,14 @@ for (var i=0; i<11; i++) {
   else
     qo = 0;
 
-  var monthsName = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  var availability = [true, true, true, true, true, true, true, true, true, true, true, true];
-  var availableThroughout = '';
+  let monthsName = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  let availability = [true, true, true, true, true, true, true, true, true, true, true, true];
+  let availableThroughout = '';
   if (waterStatus === 'Water available throughout year') {
     availableThroughout = waterStatus;
   }
   else {
-    for (var j = 0; j < 12; j++) {
+    for (let j = 0; j < 12; j++) {
       if (waterStatus.indexOf(monthsName[j]) !== -1) {
         availability[j] = false;
       }
@@ -440,7 +444,7 @@ for (var i=0; i<11; i++) {
   /* ============================================= End of Image value retrival ===========================================*/
 	
 
-	var html = createHtml({
+	let html = createHtml({
 	  title: `${xlData[i][columnNames[16]]} - ${i+1}`,
 	  lang: 'en',
 	  css: '../style.css',
@@ -606,10 +610,10 @@ for (var i=0; i<11; i++) {
 
 <script type="text/javascript">
   // DOM element where the Timeline will be attached
-  var container = document.getElementById('visualization');
+  let container = document.getElementById('visualization');
 
   // Create a DataSet (allows two way data-binding)
-  var items = new vis.DataSet([
+  let items = new vis.DataSet([
     {id: 1, content: 'GV first visited', start: '${tim1}'},
     {id: 2, content: 'TBR work began', start: '${tim2}'},
     {id: 3, content: 'TBR 100% complete', start: '${tim3}'},
@@ -619,10 +623,10 @@ for (var i=0; i<11; i++) {
   ]);
 
   // Configuration for the Timeline
-  var options = {height: '160px'};
+  let options = {height: '160px'};
 
   // Create a Timeline
-  var timeline = new vis.Timeline(container, items, options);
+  let timeline = new vis.Timeline(container, items, options);
 	</script>
 </div>
 </div>`

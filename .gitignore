@@ -21,5 +21,6 @@ yarn-error.log*
 *.sw*
 
 *.xlsx
+*.xlsx#
 output-htmls
 output-images
